@@ -1,4 +1,5 @@
 const Category = require('../models/categoryModel')
+const Products = require('../models/productModel')
 
 const categoryCtrl = {
 
@@ -40,6 +41,12 @@ const categoryCtrl = {
     },
     deleteCategory: async (req, res) => {
         try {
+
+            // If a product exists that uses this category, send an error
+            const products = await Products.findOne({category: req.params.id})
+            if (products) return res.status(400).json({
+                msg: "You must delete all products associated with this category before deleting this category."
+            })
 
             // Find a category and delete it based on the
             // request parameters id
